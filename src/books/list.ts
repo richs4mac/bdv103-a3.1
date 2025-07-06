@@ -39,7 +39,7 @@ export default function books_list(router: ZodRouter) {
             } : {};
 
             const book_list = await book_collection.find(query).map(document => {
-                let book: Book = {
+                const book: Book = {
                     id: document._id.toHexString(),
                     name: document.name,
                     image: document.image,
