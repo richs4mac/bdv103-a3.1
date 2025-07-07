@@ -2,9 +2,9 @@ import Koa from "koa";
 import cors from "@koa/cors";
 import zodRouter from 'koa-zod-router';
 import qs from "koa-qs";
-import books_list from "./books/list";
-import create_or_update_book from "./books/create_or_update";
-import delete_book from "./books/delete";
+import books_list from "./books/list.js";
+import create_or_update_book from "./books/create_or_update.js";
+import delete_book from "./books/delete.js";
 
 const app = new Koa();
 
@@ -12,7 +12,7 @@ const app = new Koa();
 qs(app);
 
 // And we add cors to ensure we can access our API from the mcmasterful-books website
-app.use(cors())
+app.use(cors());
 
 
 const router = zodRouter();
@@ -30,5 +30,5 @@ delete_book(router);
 app.use(router.routes());
 
 app.listen(3000, () => {
-    console.log("listening!")
+    console.log("listening!");
 });

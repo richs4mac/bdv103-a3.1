@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { ZodRouter } from 'koa-zod-router';
-import { book_collection } from "../database_access";
+import { book_collection } from "../database_access.js";
 import { ObjectId } from "mongodb";
 
 export default function delete_book(router: ZodRouter) {

@@ -1,7 +1,8 @@
 import { z } from "zod";
-import { book_collection } from "../database_access";
-import { type Book } from "../../adapter/assignment-2";
+import { book_collection } from "../database_access.js";
+import { type Book } from "../../adapter/assignment-2.js";
 import { ZodRouter } from "koa-zod-router";
+import { WithId } from "mongodb";
 
 export default function books_list(router: ZodRouter) {
 
@@ -22,7 +23,7 @@ export default function books_list(router: ZodRouter) {
 
             const query = filters && filters.length > 0 ? {
                 $or: filters.map(({ from, to }) => {
-                    const filter: { $gte?: number, $lte?: number } = {};
+                    const filter: { $gte?: number, $lte?: number; } = {};
                     let valid = false;
                     if (from) {
                         valid = true;
@@ -34,13 +35,15 @@ export default function books_list(router: ZodRouter) {
                     }
                     return valid ? filter : false;
                 }).filter(value => value !== false).map((filter) => {
-                    return { price: filter as { $gtr?: number, $lte?: number } }
+                    return { price: filter as { $gtr?: number, $lte?: number; } };
                 })
             } : {};
 
-            const book_list = await book_collection.find(query).map(document => {
+            const book_list = await book_collection.find(query).map((document: WithId<Book>) => {
                 const book: Book = {
-                    id: document._id.toHexString(),
+                    // NOTE I don't think toHexString is a real thing
+                    // https://stackoverflow.com/a/75634440
+                    id: document._id.toString('hex'),
                     name: document.name,
                     image: document.image,
                     price: document.price,
