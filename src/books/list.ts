@@ -1,7 +1,8 @@
 import { z } from "zod";
-import { book_collection } from "../database_access";
-import { type Book } from "../../adapter/assignment-2";
+import { book_collection } from "../database_access.js";
+import { type Book } from "../../adapter/assignment-2.js";
 import { ZodRouter } from "koa-zod-router";
+import { WithId } from "mongodb";
 
 export default function books_list(router: ZodRouter) {
 
@@ -13,7 +14,9 @@ export default function books_list(router: ZodRouter) {
             query: z.object({
                 filters: z.object({
                     from: z.coerce.number().optional(),
-                    to: z.coerce.number().optional()
+                    to: z.coerce.number().optional(),
+                    name: z.string().optional(),
+                    author: z.string().optional()
                 }).array().optional()
             })
         },
@@ -21,26 +24,22 @@ export default function books_list(router: ZodRouter) {
             const { filters } = ctx.request.query;
 
             const query = filters && filters.length > 0 ? {
-                $or: filters.map(({ from, to }) => {
-                    const filter: { $gte?: number, $lte?: number } = {};
-                    let valid = false;
-                    if (from) {
-                        valid = true;
-                        filter.$gte = from;
-                    }
-                    if (to) {
-                        valid = true;
-                        filter.$lte = to;
-                    }
-                    return valid ? filter : false;
-                }).filter(value => value !== false).map((filter) => {
-                    return { price: filter as { $gtr?: number, $lte?: number } }
-                })
+                $or: filters.map(({ from, to, name, author }) => ({
+                    price: {
+                        $gte: from,
+                        $lte: to
+                    },
+                    name,
+                    author
+                }
+                ))
             } : {};
 
-            const book_list = await book_collection.find(query).map(document => {
-                let book: Book = {
-                    id: document._id.toHexString(),
+            const book_list = await book_collection.find(query).map((document: WithId<Book>) => {
+                const book: Book = {
+                    // NOTE I don't think toHexString is a real thing
+                    // https://stackoverflow.com/a/75634440
+                    id: document._id.toString('hex'),
                     name: document.name,
                     image: document.image,
                     price: document.price,

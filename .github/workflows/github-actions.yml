@@ -1,0 +1,21 @@
+name: Lint files on push & pull request
+on: [push, pull_request]
+jobs:
+  eslint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install node_modules
+        run: npm ci
+      - name: Run ESLint
+        run: npm run lint-debug
+  typeCheck:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install node_modules
+        run: npm ci
+      - name: Run Type Check
+        run: npm run type-check

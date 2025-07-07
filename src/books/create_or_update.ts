@@ -1,6 +1,6 @@
 import { z } from "zod";
-import zodRouter, { ZodRouter } from 'koa-zod-router';
-import { book_collection } from "../database_access";
+import { ZodRouter } from 'koa-zod-router';
+import { book_collection } from "../database_access.js";
 import { ObjectId } from "mongodb";
 
 export default function create_or_update_book(router: ZodRouter) {
@@ -19,10 +19,10 @@ export default function create_or_update_book(router: ZodRouter) {
             })
         },
         handler: async (ctx, next) => {
-            let body = ctx.request.body;
+            const body = ctx.request.body;
 
             if (typeof body.id === "string") {
-                let id = body.id;
+                const id = body.id;
                 try {
                     const result = await book_collection.replaceOne({ _id: { $eq: ObjectId.createFromHexString(id) } }, {
                         id,
@@ -38,6 +38,7 @@ export default function create_or_update_book(router: ZodRouter) {
                         ctx.statusCode = 404;
                     }
                 } catch (e) {
+                    console.log(e);
                     ctx.statusCode = 500;
                 }
             } else {
@@ -52,6 +53,7 @@ export default function create_or_update_book(router: ZodRouter) {
                     ctx.body = { id: result.insertedId };
 
                 } catch (e) {
+                    console.log(e);
                     ctx.statusCode = 500;
                 }
             }

@@ -1,6 +1,6 @@
 import { MongoClient } from "mongodb";
 // We are importing the book type here, so we can keep our types consistent with the front end
-import { Book } from "../adapter/assignment-2";
+import { Book } from "../adapter/assignment-2.js";
 
 // This is the connection string for the mongo database in our docker compose file
 const uri = "mongodb://mongo";
