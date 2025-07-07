@@ -23,7 +23,7 @@ async function createOrUpdateBook(book: Book): Promise<BookID> {
     });
 
     if (result.ok) {
-        let res = await result.json() as { id: BookID; };
+        const res = await result.json() as { id: BookID; };
         return res.id;
     } else {
         throw new Error("Failed to create or update book");
