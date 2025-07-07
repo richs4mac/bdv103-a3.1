@@ -24,29 +24,15 @@ export default function books_list(router: ZodRouter) {
             const { filters } = ctx.request.query;
 
             const query = filters && filters.length > 0 ? {
-                $or: filters.map(({ from, to, name, author }) => {
-                    const filter: { $gte?: number, $lte?: number; name?: string; author?: string; } = {};
-                    let valid = false;
-                    if (from) {
-                        valid = true;
-                        filter.$gte = from;
-                    }
-                    if (to) {
-                        valid = true;
-                        filter.$lte = to;
-                    }
-                    if (name) {
-                        valid = true;
-                        filter.name = name;
-                    }
-                    if (author) {
-                        valid = true;
-                        filter.author = author;
-                    }
-                    return valid ? filter : false;
-                }).filter(value => value !== false).map((filter) => {
-                    return { price: { $gte: filter.$gte, $lte: filter.$lte }, name: filter.name, author: filter.author };
-                })
+                $or: filters.map(({ from, to, name, author }) => ({
+                    price: {
+                        $gte: from,
+                        $lte: to
+                    },
+                    name,
+                    author
+                }
+                ))
             } : {};
 
             const book_list = await book_collection.find(query).map((document: WithId<Book>) => {
