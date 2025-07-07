@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "lint": "npx eslint src/**",
+    "lint-debug": "npx eslint src/** --debug",
     "fix-lint": "npx eslint --fix src/**",
     "fix-lint-dry": "npx eslint --fix-dry-run src/**",
     "start-server": "tsx ./src/index.ts",
